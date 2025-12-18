@@ -79,4 +79,37 @@ else:
         st.session_state.numbers = None
         st.rerun()
 
-    st.title
+    st.title("🎮 เกมคณิตศาสตร์ 24")
+    
+    if st.session_state.numbers is None:
+        st.session_state.numbers = [random.randint(1, 9) for _ in range(4)]
+
+    st.write("ใช้เลขทั้ง 4 ตัวนี้ให้ได้ผลลัพธ์เท่ากับ 24:")
+    cols = st.columns(4)
+    for i in range(4):
+        cols[i].markdown(f"<h1 style='text-align: center; background-color: #262730; color: white; border-radius: 10px;'>{st.session_state.numbers[i]}</h1>", unsafe_allow_html=True)
+
+    user_ans = st.text_input("ใส่สมการของคุณ (เช่น (5+1)*4):", placeholder="ใช้เครื่องหมาย + - * / ( )")
+
+    if st.button("ตรวจสอบคำตอบ", type="primary"):
+        try:
+            digits_in_ans = sorted([int(s) for s in user_ans if s.isdigit()])
+            if digits_in_ans != sorted(st.session_state.numbers):
+                st.error("❌ ต้องใช้เลขที่กำหนดให้ครบ 4 ตัว")
+            else:
+                result = eval(user_ans)
+                if result == 24:
+                    st.balloons()
+                    st.success(f"ถูกต้อง! {user_ans} = 24 (+10 XP)")
+                    users[current_user]['xp'] += 10
+                    save_users(users)
+                    st.session_state.numbers = None
+                    st.button("เล่นข้อต่อไป")
+                else:
+                    st.error(f"ยังไม่ถูก! {user_ans} = {result}")
+        except:
+            st.warning("สมการไม่ถูกต้อง")
+
+    if st.button("ข้ามข้อนี้"):
+        st.session_state.numbers = None
+        st.rerun()
